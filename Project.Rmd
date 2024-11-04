@@ -1,0 +1,144 @@
+---
+title: "Multinomial Logistic Regression"
+output: pdf_document
+author: "Ziqi Mu"
+date: "2024-01-24"
+editor_options:
+  markdown: 
+    wrap: 72
+---
+
+```{r}
+library(MASS)
+library(nnet)
+library(broom)
+library(plyr)
+library(dplyr)
+stardata <- read.csv("/Users/ziqimu/Desktop/project/Stars.csv")      #read the dataset
+stardata$Type <- recode_factor(stardata$Type, "0" = "Red", "1" = "Brown", "2" = "White",
+"3" = "Main", "4" = "Super", "5" = "Hyper")
+stardata$Color <- recode_factor(stardata$Color,
+"Red" = "Red", 
+"White" = "White",
+"Blue White" = "Blue-White", 
+"Blue-white" = "Blue-White", 
+"Blue white" = "Blue-White", 
+"Blue-White" = "Blue-White", 
+"Yellowish White" = "Yellow-White", 
+"yellow-white" = "Yellow-White", 
+"Whitish" = "White", 
+"white" = "White",
+"Orange-Red" = "Orange-Red", 
+"Orange" = "Orange", 
+"yellowish" = "Yellow", 
+"Yellowish" = "Yellow",
+"Pale yellow orange" = "Pale-yellow-orange", 
+"White-Yellow" = "Yellow-White")  
+#improve dataset 
+
+stardata$L <- 3.828 * 10^26 * (stardata$L)   
+#adjust luminosity by multiplying 3.846 × 10^26 Watts
+```
+
+# Introduction
+```{r}
+nrow(stardata)
+summary(stardata)
+```
+A star is a massive self-luminous celestial body of gas that shines by radiation derived from its internal energy sources. The data set we want to explore collected luminosity, temperature, radius, magnitude, color, spectral class, and star type of 240 different stars.
+
+### 1. Luminosity (L)
+
+The quantitative variable L describes luminosity of the target star in Watt, which is the total amount of electromagnetic energy emitted per unit of time by a star. In our dataset, it ranges from 3.062e+22 Watt to 3.252e+32 Watt.
+
+### 2. Temperature (K)
+
+K describes the surface temperatures of stars in Kelvin. It ranges from 1939 K to 40000 K.
+
+### 3. Radius (R/R0)
+
+Radius ranges from 0.0084 to 1948.5 and is measured in ratio: radius of stars expressed relative to that of the Sun. The Sun has a zero point radius which equals 6.95x10^8 meter. 
+
+### 4. Absolute magnitude
+
+Absolute magnitude measures the brightness of a star from a distance of 10 parsecs away in Mv, where a parsec is equal to 3.26 light-years.
+
+### 5. Color & Spectral class
+
+Color contains 9 different types: Red, Orange-Red, Orange, Pale-yellow-orange, Yellow, Yellow-White, White, Blue-White, and Blue.
+Spectral class contains 7 types: O(hottest), B, A, F, G, K, and M(coolest). O stars include bluish white stars, with surface temperature of 25000 - 50000 K. M stars are red, at only about 3000 K.
+
+### 6. Star type
+
+We have 6 star types: Red Dwarf, Brown Dwarf, White Dwarf, Main Sequence , SuperGiant, and HyperGiant. Each type contains 40 observations.
+
+# Analysis
+```{r}
+par(mfcol = c(1,2))
+boxplot(log(Temperature) ~ Type, data = stardata, main = "temperature vs. star type")
+boxplot(log(L) ~ Type, data = stardata,  main = "luminosity vs. star type")
+boxplot(log(R) ~ Type, data = stardata, main = "radius vs. star type")
+boxplot((A_M) ~ Type, data = stardata,  main = "absolute magnitude vs. star type")
+
+stardata$Spectral_Class1 <- factor(stardata$Spectral_Class , levels=c("M", "K", "G", "F",
+"A", "B", "O"))
+boxplot(log(Temperature) ~ Spectral_Class1, data = stardata, main = "temperature 
+vs. spectral_color")
+
+stardata$Color <- factor(stardata$Color , levels=c("Red", "Orange-Red", "Orange",
+"Pale-yellow-orange", "Yellow", "Yellow-White", "White", "Blue-White", "Blue"))
+boxplot(log(Temperature) ~ Color, data = stardata, main = "temperature vs. color")
+```
+We create 6 side-to-side boxplots regarding stars' temperature, luminosity, radius, absolute magnitude, spectral color, and star type. To make boxplots clearer, we apply log transformation to reduce skewness. In the last two plots, we notice that temperature and star color are closely related: if the star is very hot, it will appear blue, if it's cold, it will become more reddish.
+
+```{r, include = FALSE}
+table(stardata$Type, stardata$Spectral_Class)
+table(stardata$Type, stardata$Color)
+```
+
+
+```{r}
+library(ggpubr)
+library(Rmisc)
+ggplot(data = stardata) + geom_point(aes(x = Temperature, y = A_M, 
+color = Type)) + scale_x_reverse() + scale_y_reverse()
+# reserve x and y axis to fit H-R diagram
+ggplot(data = stardata) + geom_point(aes(x = Temperature, y = L, 
+color = Type)) + scale_x_reverse()  +scale_y_log10()
+#using log transformation for luminosity
+```
+The H–R diagram (Hertzsprung–Russell diagram) is a scatter plot of stars showing the relationship between the stars' absolute magnitudes versus their effective temperatures.
+
+
+```{r}
+stardata$Type2 <- relevel(as.factor(stardata$Type), ref = "Main")
+multi_full <- multinom(Type2 ~ Temperature + A_M + R + log(L) + Color + Spectral_Class,
+data = stardata)
+```
+We manually select star type "Main" as the base category and build up a multinomial logistic regression model based on all variables we have. 
+
+```{r, include = FALSE}
+stepwise <- stepAIC(multi_full, direction = "both", trace = FALSE)
+forward <- stepAIC(multi_full, direction = "forward", trace = FALSE)
+backward <- stepAIC(multi_full, direction = "backward", trace = FALSE)
+```
+
+
+```{r}
+AIC(stepwise)
+AIC(forward)
+AIC(backward)
+
+summary(stepwise)
+summary(forward)
+summary(backward)
+```
+
+We fit multinomial logistic regression models by using forward selection, backward elimination, and stepwise selection(both). Backward elimination and stepwise selection both have AIC = 30.22474 and they reach the same model, while forward selection have an AIC = 180. Thus we pick the model with a lowest AIC value.
+
+```{r}
+library(caret)
+predicted_outcomes <- predict(backward, newdata = stardata)
+confusionMatrix(table(predicted_outcomes, stardata$Type2))
+```
+We use confusion matrix and get an accuracy of 1.
