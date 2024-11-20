@@ -1,2 +1,2 @@
 # Independent-Project-Multinomial-Logistic-Regression
-Conducted multinomial logistic regression using R to develop a model for star recognition and classification
+We simulated the Herlaut diagram (H-R diagram) through statistical plotting and conducted multinomial logistic regression using R to develop a model for star recognition and classification. 
