@@ -42,7 +42,22 @@ We have 6 star types: Red Dwarf, Brown Dwarf, White Dwarf, Main Sequence , Super
 ## Conclusion
 The H–R diagram (Hertzsprung–Russell diagram) is a scatter plot of stars showing the relationship between the stars’ absolute magnitudes versus their effective temperatures.
 
+![H-R Diagram](H-R%20Diagram.jpg)
+
+
 We fit multinomial logistic regression models by using forward selection, backward elimination, and stepwise selection(both). Backward elimination and stepwise selection both have AIC = 30.22474 and they reach the same model, while forward selection have an AIC = 180. Thus we pick the model with a lowest AIC value.
+
+### Coefficients:
+
+|              | (Intercept) | A_M       | R        |
+|--------------|-------------|-----------|----------|
+| **Red**      | -208.99504  | 18.728238 | 6.914394 |
+| **Brown**    | -106.19504  | 12.058530 | 7.909280 |
+| **White**    | -70.33756   | 10.385723 | -244.689645 |
+| **Super**    | -417.22644  | -70.021861 | 7.311421 |
+| **Hyper**    | -79.76816   | 7.189164  | 7.915531 |
+
+We use confusion matrix and get an accuracy of 1.
 
 ## Tools
 <div>
