@@ -1,5 +1,5 @@
 ### Abstract
-We simulated the Herlaut diagram (H-R diagram) through statistical plotting and conducted multinomial logistic regression using R to develop a model for star recognition and classificatio
+I simulated the Herlaut diagram (H-R diagram) through statistical plotting and conducted multinomial logistic regression using R to develop a model for star recognition and classificatio
 
 ## Background
 A star is a massive self-luminous celestial body of gas that shines by radiation derived from its internal energy sources. The data set we want to explore collected luminosity, temperature, radius, magnitude, color, spectral class, and star type of 240 different stars.
@@ -35,7 +35,7 @@ about 3000 K.
 
 6. Star type
     
-We have 6 star types: Red Dwarf, Brown Dwarf, White Dwarf, Main Sequence , SuperGiant, and HyperGiant. Each type contains 40 observations.
+There are 6 star types: Red Dwarf, Brown Dwarf, White Dwarf, Main Sequence, SuperGiant, and HyperGiant. Each type contains 40 observations.
 
 ## 
 
@@ -45,7 +45,7 @@ The H–R diagram (Hertzsprung–Russell diagram) is a scatter plot of stars sho
 ![H-R Diagram](H-R%20Diagram.jpg)
 
 
-We fit multinomial logistic regression models by using forward selection, backward elimination, and stepwise selection(both). Backward elimination and stepwise selection both have AIC = 30.22474 and they reach the same model, while forward selection have an AIC = 180. Thus we pick the model with a lowest AIC value.
+I fit multinomial logistic regression models by using forward selection, backward elimination, and stepwise selection(both). Backward elimination and stepwise selection both have AIC = 30.22474 and they reach the same model, while forward selection has an AIC = 180. Thus I chose the model with a lowest AIC value.
 
 ### Coefficients:
 
@@ -57,7 +57,7 @@ We fit multinomial logistic regression models by using forward selection, backwa
 | **Super**    | -417.22644  | -70.021861 | 7.311421 |
 | **Hyper**    | -79.76816   | 7.189164  | 7.915531 |
 
-We use confusion matrix and get an accuracy of 1.
+The confusion matrix gets an accuracy of 1.
 
 ## Tools
 <div>
