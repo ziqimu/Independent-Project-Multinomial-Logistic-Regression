@@ -1,8 +1,8 @@
 ### Abstract
-I simulated the Herlaut diagram (H-R diagram) through statistical plotting and conducted multinomial logistic regression using R to develop a model for star recognition and classificatio
+I simulated the Herlaut diagram (H-R diagram) through statistical plotting and conducted multinomial logistic regression using R to develop a model for star recognition and classification.
 
 ## Background
-A star is a massive self-luminous celestial body of gas that shines by radiation derived from its internal energy sources. The data set we want to explore collected luminosity, temperature, radius, magnitude, color, spectral class, and star type of 240 different stars.
+A star is a massive self-luminous celestial body of gas that shines by radiation derived from its internal energy sources. The data set I want to explore collected luminosity, temperature, radius, magnitude, color, spectral class, and star type of 240 different stars.
 
 ## Getting the Dataset
 Access data from Kaggle: 
